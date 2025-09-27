@@ -1,0 +1,823 @@
+/* 自定义样式 */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+
+/* PWA 移动端优化 */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    .search-container {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .navbar-nav {
+        margin-top: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* 触摸友好的按钮和表单 */
+@media (max-width: 768px) {
+    .btn, .form-control, .form-select {
+        min-height: 44px;
+    }
+
+    .form-check-input {
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+    .form-check-label {
+        padding-left: 0.5em;
+    }
+}
+
+/* PWA 安装提示样式 */
+#pwa-install-prompt {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.page-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.btn {
+    border-radius: 0.375rem;
+}
+
+.customer-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.2s;
+}
+
+.customer-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.customer-info h5 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.customer-info p {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #dee2e6;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .customer-card {
+        padding: 0.75rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* 表单验证样式 */
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* 车辆数量标签样式 */
+.badge.cursor-pointer {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.badge.cursor-pointer:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+/* 客户标签样式 */
+.badge.bg-secondary {
+    font-size: 0.75rem;
+}
+
+/* 表单复选框容器 */
+.form-check-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 576px) {
+    .form-check-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* 车辆卡片样式 */
+.vehicle-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.2s;
+}
+
+.vehicle-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.vehicle-info h5 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.vehicle-info p {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+/* 可点击文本样式 */
+.text-primary.cursor-pointer {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.text-primary.cursor-pointer:hover {
+    text-decoration: underline;
+}
+
+/* 车辆信息徽章 */
+.badge.bg-primary {
+    font-size: 0.75rem;
+}
+
+/* 筛选卡片样式 */
+#customer-filter-card {
+    border-left: 4px solid #0d6efd;
+}
+
+/* 移动端车辆卡片优化 */
+@media (max-width: 768px) {
+    .vehicle-card {
+        padding: 0.75rem;
+    }
+    
+    .vehicle-info h5 {
+        font-size: 1rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+    }
+}
+
+/* 维修记录卡片样式 */
+.maintenance-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    transition: all 0.2s;
+}
+
+.maintenance-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.maintenance-info h5 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.maintenance-info p {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+/* 维修类型复选框容器 */
+.maintenance-type-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.maintenance-type-checkboxes .form-check {
+    margin-bottom: 0.5rem;
+}
+
+/* 维修记录模态框样式 */
+#addMaintenanceModal .modal-dialog {
+    max-width: 800px;
+}
+
+/* 成功徽章样式 */
+.badge.bg-success {
+    font-size: 0.75rem;
+}
+
+/* 筛选卡片样式 */
+#vehicle-filter-card {
+    border-left: 4px solid #28a745;
+}
+
+#vehicle-filter-card .btn-group {
+    white-space: nowrap;
+}
+
+/* 移动端筛选卡片优化 */
+@media (max-width: 768px) {
+    #vehicle-filter-card .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    #vehicle-filter-card .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* 快速输入样式 */
+.quick-input-section {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
+    border: 1px solid #f39c12;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.quick-input-results {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.quick-result-item {
+    padding: 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.quick-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.quick-result-item:last-child {
+    border-bottom: none;
+}
+
+.quick-result-title {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.quick-result-subtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.quick-input-highlight {
+    background-color: #fff3cd;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+    font-weight: bold;
+}
+
+.no-results-found {
+    padding: 1rem;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.add-new-customer-btn {
+    padding: 0.75rem;
+    background: #e8f5e8;
+    border-bottom: 1px solid #c3e6cb;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-new-customer-btn:hover {
+    background: #d4edda;
+}
+
+/* 移动端维修记录优化 */
+@media (max-width: 768px) {
+    .maintenance-card {
+        padding: 0.75rem;
+    }
+    
+    .maintenance-info h5 {
+        font-size: 1rem;
+    }
+    
+    .maintenance-type-checkboxes {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .maintenance-type-checkboxes .form-check {
+        margin-bottom: 0.25rem;
+    }
+    
+    #addMaintenanceModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: none;
+    }
+    
+    .quick-input-section {
+        padding: 0.75rem;
+    }
+}
+
+/* 搜索框样式 */
+.search-container {
+    min-width: 300px;
+}
+
+.search-input {
+    padding-right: 2.5rem;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-input:focus {
+    background-color: white;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.search-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 10;
+}
+
+/* 搜索结果样式 */
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1050;
+    margin-top: 0.25rem;
+}
+
+.search-results-header {
+    padding: 0.5rem 0.75rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: bold;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.search-result-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-title {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.search-result-subtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.search-result-meta {
+    font-size: 0.75rem;
+    color: #adb5bd;
+}
+
+.search-no-results {
+    padding: 1rem;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+    font-weight: bold;
+}
+
+/* 移动端搜索优化 */
+@media (max-width: 768px) {
+    .search-container {
+        min-width: 200px;
+    }
+    
+    .search-input {
+        font-size: 0.875rem;
+        padding: 0.375rem 2rem 0.375rem 0.75rem;
+    }
+    
+    .search-results {
+        max-height: 300px;
+        margin-top: 0.125rem;
+    }
+    
+    .search-result-item {
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-container {
+        min-width: 150px;
+    }
+    
+    .search-input {
+        font-size: 0.8rem;
+        padding: 0.25rem 1.75rem 0.25rem 0.5rem;
+    }
+    
+    .search-icon {
+        right: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* 搜索高亮效果 */
+.highlighted-item {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+    border: 2px solid #f39c12 !important;
+    box-shadow: 0 0 20px rgba(243, 156, 18, 0.3) !important;
+    animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 30px rgba(243, 156, 18, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
+    }
+}
+
+/* 消息提醒模块样式 */
+.customer-notification-card {
+    background: white;
+    transition: all 0.2s;
+    border: 1px solid #dee2e6 !important;
+}
+
+.customer-notification-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-check-label.small {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-switch .form-check-input {
+    width: 2rem;
+    height: 1rem;
+}
+
+.customer-notification-card .form-control-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.customer-notification-card .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* 通知统计卡片样式 */
+.card.border-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.card.border-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+.card.border-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.card.border-primary {
+    border-left: 4px solid #0d6efd !important;
+}
+
+/* 移动端消息提醒优化 */
+@media (max-width: 768px) {
+    .customer-notification-card .row {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .customer-notification-card .col-md-4,
+    .customer-notification-card .col-md-3,
+    .customer-notification-card .col-md-2 {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .customer-notification-card .text-end {
+        text-align: start !important;
+    }
+    
+    .customer-notification-card .btn-group-vertical {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .customer-notification-card .form-check {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .customer-notification-card {
+        padding: 0.75rem !important;
+    }
+    
+    .customer-notification-card h6 {
+        font-size: 0.9rem;
+    }
+    
+    .customer-notification-card .badge {
+        font-size: 0.7rem;
+    }
+}
+
+/* 数据统计模块样式 */
+.card.border-primary {
+    border-left: 4px solid #0d6efd !important;
+}
+
+.card.border-info {
+    border-left: 4px solid #0dcaf0 !important;
+}
+
+.card.border-success {
+    border-left: 4px solid #198754 !important;
+}
+
+.card.border-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+/* 统计卡片数字样式 */
+.card h3 {
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.card small {
+    font-size: 0.8rem;
+}
+
+/* 图表容器样式 */
+#revenueChart, #maintenanceTypeChart {
+    min-height: 300px;
+    position: relative;
+}
+
+#revenueChart .bg-primary {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* 进度条样式 */
+.progress {
+    background-color: #f8f9fa;
+}
+
+.progress-bar {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    transition: width 0.3s ease;
+}
+
+/* 统计表格样式 */
+.table td {
+    border: none;
+    padding: 0.5rem 0.75rem;
+}
+
+.table td:first-child {
+    font-weight: 500;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #f8f9fa;
+}
+
+/* 快速选择按钮样式 */
+.btn-group .btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* 日期筛选样式 */
+.card-header h5 {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* 图表标题样式 */
+.card-header h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* 空状态样式 */
+.text-muted.mt-5 {
+    font-style: italic;
+}
+
+/* 统计数据动画效果 */
+.card.border-primary:hover,
+.card.border-info:hover,
+.card.border-success:hover,
+.card.border-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+/* 移动端数据统计优化 */
+@media (max-width: 768px) {
+    .card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .card small {
+        font-size: 0.75rem;
+    }
+    
+    #revenueChart .bg-primary {
+        min-height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .btn-group .btn-sm {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .progress {
+        height: 6px !important;
+    }
+    
+    .table {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card h3 {
+        font-size: 1.25rem;
+    }
+    
+    .card .card-text {
+        font-size: 0.875rem;
+    }
+    
+    #revenueChart .col {
+        margin-bottom: 1rem;
+    }
+    
+    #revenueChart .bg-primary {
+        min-height: 30px;
+        font-size: 0.75rem;
+    }
+}

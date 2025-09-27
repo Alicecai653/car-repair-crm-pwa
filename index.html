@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽修店客户管理系统</title>
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="汽修CRM">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-wrench me-2"></i>汽修店CRM
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showPage('customers')">
+                            <i class="fas fa-users me-1"></i>客户管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('vehicles')">
+                            <i class="fas fa-car me-1"></i>车辆管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('maintenance')">
+                            <i class="fas fa-tools me-1"></i>维修记录
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('reminders')">
+                            <i class="fas fa-bell me-1"></i>保养提醒
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('notifications')">
+                            <i class="fas fa-comment me-1"></i>消息提醒
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('statistics')">
+                            <i class="fas fa-chart-bar me-1"></i>数据统计
+                        </a>
+                    </li>
+                </ul>
+                <!-- 搜索框 -->
+                <div class="d-flex ms-auto">
+                    <div class="search-container position-relative">
+                        <input type="text" class="form-control search-input" id="globalSearch" placeholder="搜索客户、车牌、电话..." autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                        <div id="searchResults" class="search-results" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="container mt-4">
+        <!-- 客户管理页面 -->
+        <div id="customers-page" class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users me-2"></i>客户管理</h2>
+                <button class="btn btn-primary" onclick="showAddCustomerModal()">
+                    <i class="fas fa-plus me-1"></i>添加客户
+                </button>
+            </div>
+            
+            <!-- 客户列表 -->
+            <div class="card">
+                <div class="card-body">
+                    <div id="customers-list">
+                        <!-- 客户列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 车辆管理页面 -->
+        <div id="vehicles-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-car me-2"></i>车辆管理</h2>
+                <button class="btn btn-primary" onclick="showAddVehicleModal()">
+                    <i class="fas fa-plus me-1"></i>添加车辆
+                </button>
+            </div>
+            
+            <!-- 客户筛选 -->
+            <div class="card mb-4" id="customer-filter-card" style="display: none;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">当前查看客户</h6>
+                            <span id="filtered-customer-name" class="text-primary"></span>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="clearCustomerFilter()">
+                            <i class="fas fa-times me-1"></i>查看全部
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 车辆列表 -->
+            <div class="card">
+                <div class="card-body">
+                    <div id="vehicles-list">
+                        <!-- 车辆列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 维修记录页面 -->
+        <div id="maintenance-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tools me-2"></i>维修记录</h2>
+                <button class="btn btn-primary" onclick="showAddMaintenanceModal()">
+                    <i class="fas fa-plus me-1"></i>添加维修记录
+                </button>
+            </div>
+            
+            <!-- 车辆筛选 -->
+            <div class="card mb-4" id="vehicle-filter-card" style="display: none;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">当前查看车辆</h6>
+                            <span id="filtered-vehicle-info" class="text-primary"></span>
+                        </div>
+                        <div>
+                            <button class="btn btn-success btn-sm me-2" onclick="addMaintenanceForCurrentVehicle()">
+                                <i class="fas fa-plus me-1"></i>为此车添加维修记录
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="clearVehicleFilter()">
+                                <i class="fas fa-times me-1"></i>查看全部
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 维修记录列表 -->
+            <div class="card">
+                <div class="card-body">
+                    <div id="maintenance-list">
+                        <!-- 维修记录列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reminders-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-bell me-2"></i>保养提醒</h2>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary" onclick="crm.refreshReminders()">
+                        <i class="fas fa-sync-alt me-1"></i>刷新提醒
+                    </button>
+                </div>
+            </div>
+
+            <!-- 提醒统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center border-danger">
+                        <div class="card-body">
+                            <h3 class="text-danger mb-1" id="urgentCount">0</h3>
+                            <p class="card-text text-muted">紧急提醒</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-1" id="warningCount">0</h3>
+                            <p class="card-text text-muted">即将到期</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <h3 class="text-info mb-1" id="normalCount">0</h3>
+                            <p class="card-text text-muted">正常提醒</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h3 class="text-success mb-1" id="totalVehicles">0</h3>
+                            <p class="card-text text-muted">总车辆数</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提醒筛选 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="reminderFilter" id="allReminders" value="all" checked>
+                                <label class="btn btn-outline-primary" for="allReminders">全部</label>
+                                
+                                <input type="radio" class="btn-check" name="reminderFilter" id="urgentReminders" value="urgent">
+                                <label class="btn btn-outline-danger" for="urgentReminders">紧急</label>
+                                
+                                <input type="radio" class="btn-check" name="reminderFilter" id="warningReminders" value="warning">
+                                <label class="btn btn-outline-warning" for="warningReminders">即将到期</label>
+                                
+                                <input type="radio" class="btn-check" name="reminderFilter" id="normalReminders" value="normal">
+                                <label class="btn btn-outline-info" for="normalReminders">正常</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                基于平均公里数自动计算保养提醒
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提醒列表 -->
+            <div id="remindersList">
+                <!-- 提醒卡片将在这里动态生成 -->
+            </div>
+        </div>
+
+        <!-- 消息提醒页面 -->
+        <div id="notifications-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-comment me-2"></i>消息提醒设置</h2>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary" onclick="crm.refreshNotificationSettings()">
+                        <i class="fas fa-sync-alt me-1"></i>刷新
+                    </button>
+                    <button class="btn btn-success" onclick="crm.testNotifications()">
+                        <i class="fas fa-paper-plane me-1"></i>测试发送
+                    </button>
+                </div>
+            </div>
+
+            <!-- 通知统计 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h3 class="text-success mb-1" id="enabledCustomersCount">0</h3>
+                            <p class="card-text text-muted">已启用客户</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <h3 class="text-info mb-1" id="totalNotificationsCount">0</h3>
+                            <p class="card-text text-muted">今日已发送</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-1" id="pendingNotificationsCount">0</h3>
+                            <p class="card-text text-muted">待发送提醒</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-primary">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-1" id="wechatEnabledCount">0</h3>
+                            <p class="card-text text-muted">微信已绑定</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全局设置 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>全局提醒设置</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableGlobalNotifications" checked>
+                                <label class="form-check-label" for="enableGlobalNotifications">
+                                    <strong>启用全局消息提醒</strong>
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableWechatNotifications" checked>
+                                <label class="form-check-label" for="enableWechatNotifications">
+                                    启用微信提醒
+                                </label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableSmsNotifications">
+                                <label class="form-check-label" for="enableSmsNotifications">
+                                    启用短信提醒
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="notificationTime" class="form-label">发送时间</label>
+                                <input type="time" class="form-control" id="notificationTime" value="09:00">
+                                <div class="form-text">设置每日发送保养提醒的时间</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="advanceDays" class="form-label">提前提醒天数</label>
+                                <select class="form-select" id="advanceDays">
+                                    <option value="1">1天</option>
+                                    <option value="3" selected>3天</option>
+                                    <option value="7">7天</option>
+                                    <option value="14">14天</option>
+                                </select>
+                                <div class="form-text">在保养到期前几天开始提醒</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-primary" onclick="crm.saveGlobalNotificationSettings()">
+                            <i class="fas fa-save me-1"></i>保存设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 客户通知设置 -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>客户通知设置</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="customerFilter" id="allCustomersNotif" value="all" checked>
+                        <label class="btn btn-outline-primary" for="allCustomersNotif">全部</label>
+                        
+                        <input type="radio" class="btn-check" name="customerFilter" id="enabledCustomersNotif" value="enabled">
+                        <label class="btn btn-outline-success" for="enabledCustomersNotif">已启用</label>
+                        
+                        <input type="radio" class="btn-check" name="customerFilter" id="disabledCustomersNotif" value="disabled">
+                        <label class="btn btn-outline-secondary" for="disabledCustomersNotif">未启用</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="customerNotificationsList">
+                        <!-- 客户通知设置列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="statistics-page" class="page-content" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-chart-bar me-2"></i>数据统计</h2>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary" onclick="crm.refreshStatistics()">
+                        <i class="fas fa-sync-alt me-1"></i>刷新数据
+                    </button>
+                    <button class="btn btn-outline-success" onclick="crm.exportStatistics()">
+                        <i class="fas fa-download me-1"></i>导出报表
+                    </button>
+                </div>
+            </div>
+
+            <!-- 核心业务指标 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center border-primary">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-1" id="totalCustomers">0</h3>
+                            <p class="card-text text-muted">总客户数</p>
+                            <small class="text-success" id="newCustomersThisMonth">本月新增: 0</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <h3 class="text-info mb-1" id="totalVehicles">0</h3>
+                            <p class="card-text text-muted">总车辆数</p>
+                            <small class="text-info" id="avgVehiclesPerCustomer">平均每客户: 0辆</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h3 class="text-success mb-1" id="totalMaintenanceRecords">0</h3>
+                            <p class="card-text text-muted">总维修记录</p>
+                            <small class="text-success" id="thisMonthRecords">本月维修: 0次</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-1" id="totalRevenue">¥0</h3>
+                            <p class="card-text text-muted">总营收</p>
+                            <small class="text-warning" id="thisMonthRevenue">本月营收: ¥0</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间筛选 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>统计时间范围</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label for="startDate" class="form-label">开始日期</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="endDate" class="form-label">结束日期</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">快速选择</label>
+                            <div class="btn-group d-block" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="crm.setDateRange('thisMonth')">本月</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="crm.setDateRange('lastMonth')">上月</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="crm.setDateRange('thisYear')">今年</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary" onclick="crm.filterStatisticsByDate()">
+                                <i class="fas fa-filter me-1"></i>筛选
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 业务分析图表 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>月度营收趋势</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="revenueChart" style="height: 300px;">
+                                <!-- 营收趋势图表将在这里渲染 -->
+                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                        <p>营收趋势图表</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>维修类型分布</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="maintenanceTypeChart" style="height: 300px;">
+                                <!-- 维修类型饼图将在这里渲染 -->
+                                <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                                        <p>维修类型分布图</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细统计表格 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-users me-2"></i>客户统计详情</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <tbody id="customerStatsTable">
+                                        <!-- 客户统计数据 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-tools me-2"></i>维修统计详情</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <tbody id="maintenanceStatsTable">
+                                        <!-- 维修统计数据 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加客户模态框 -->
+    <div class="modal fade" id="addCustomerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加客户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="customerForm">
+                        <div class="mb-3">
+                            <label for="customerName" class="form-label">客户姓名 *</label>
+                            <input type="text" class="form-control" id="customerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customerPhone" class="form-label">联系电话 *</label>
+                            <input type="tel" class="form-control" id="customerPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customerAddress" class="form-label">地址</label>
+                            <textarea class="form-control" id="customerAddress" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customerTags" class="form-label">客户标签</label>
+                            <div class="form-check-container">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="oldCustomer" value="老客户">
+                                    <label class="form-check-label" for="oldCustomer">老客户</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="vipCustomer" value="大客户">
+                                    <label class="form-check-label" for="vipCustomer">大客户</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customerWechat" class="form-label">微信号</label>
+                            <input type="text" class="form-control" id="customerWechat" placeholder="客户微信号（用于发送保养提醒）">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">通知设置</label>
+                            <div class="form-check-container">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="enableWechatNotif" value="微信提醒" checked>
+                                    <label class="form-check-label" for="enableWechatNotif">微信提醒</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="enableSmsNotif" value="短信提醒">
+                                    <label class="form-check-label" for="enableSmsNotif">短信提醒</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCustomer()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加车辆模态框 -->
+    <div class="modal fade" id="addVehicleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加车辆</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="vehicleForm">
+                        <div class="mb-3">
+                            <label for="vehicleCustomer" class="form-label">所属客户 *</label>
+                            <select class="form-select" id="vehicleCustomer" required>
+                                <option value="">请选择客户</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vehiclePlate" class="form-label">车牌号 *</label>
+                            <input type="text" class="form-control" id="vehiclePlate" placeholder="如：京A12345" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="vehicleBrand" class="form-label">品牌 *</label>
+                                    <input type="text" class="form-control" id="vehicleBrand" placeholder="如：丰田" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="vehicleModel" class="form-label">型号 *</label>
+                                    <input type="text" class="form-control" id="vehicleModel" placeholder="如：凯美瑞" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="vehicleYear" class="form-label">年份</label>
+                                    <input type="number" class="form-control" id="vehicleYear" placeholder="如：2020" min="1980" max="2030">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="vehicleColor" class="form-label">颜色</label>
+                                    <input type="text" class="form-control" id="vehicleColor" placeholder="如：白色">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vehicleVin" class="form-label">车架号(VIN)</label>
+                            <input type="text" class="form-control" id="vehicleVin" placeholder="17位车架号（可选）">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveVehicle()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加维修记录模态框 -->
+    <div class="modal fade" id="addMaintenanceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加维修记录</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="maintenanceForm">
+                        <!-- 快速输入区域 -->
+                        <div class="quick-input-section mb-4">
+                            <label for="quickInput" class="form-label">
+                                <i class="fas fa-bolt text-warning me-1"></i>快速输入（电话号码或车牌号）
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="quickInput" placeholder="输入电话号码或车牌号，自动匹配客户车辆..." autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="clearQuickInput">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div id="quickInputResults" class="quick-input-results mt-2" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceCustomer" class="form-label">客户 *</label>
+                                    <select class="form-select" id="maintenanceCustomer" required onchange="updateVehicleOptions()">
+                                        <option value="">请选择客户</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceVehicle" class="form-label">车辆 *</label>
+                                    <select class="form-select" id="maintenanceVehicle" required>
+                                        <option value="">请先选择客户</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceDate" class="form-label">维修日期 *</label>
+                                    <input type="date" class="form-control" id="maintenanceDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceMileage" class="form-label">公里数 *</label>
+                                    <input type="number" class="form-control" id="maintenanceMileage" placeholder="如：50000" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="maintenanceType" class="form-label">维修类型 *</label>
+                            <div class="maintenance-type-checkboxes">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeOilChange" value="换机油">
+                                    <label class="form-check-label" for="typeOilChange">换机油</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeBrake" value="刹车保养">
+                                    <label class="form-check-label" for="typeBrake">刹车保养</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeTire" value="轮胎更换">
+                                    <label class="form-check-label" for="typeTire">轮胎更换</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeFilter" value="空气滤芯">
+                                    <label class="form-check-label" for="typeFilter">空气滤芯</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeEngine" value="发动机检修">
+                                    <label class="form-check-label" for="typeEngine">发动机检修</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="typeOther" value="其他">
+                                    <label class="form-check-label" for="typeOther">其他</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="maintenanceDescription" class="form-label">维修详情</label>
+                            <textarea class="form-control" id="maintenanceDescription" rows="3" placeholder="详细描述维修内容、更换的零件等"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceCost" class="form-label">费用 (元)</label>
+                                    <input type="number" class="form-control" id="maintenanceCost" step="0.01" placeholder="如：298.50">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maintenanceTechnician" class="form-label">技师</label>
+                                    <input type="text" class="form-control" id="maintenanceTechnician" placeholder="如：张师傅">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="maintenanceNotes" class="form-label">备注</label>
+                            <textarea class="form-control" id="maintenanceNotes" rows="2" placeholder="其他备注信息"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMaintenanceRecord()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA 安装提示 -->
+    <div id="pwa-install-prompt" class="position-fixed bottom-0 start-0 end-0 p-3" style="z-index: 1050; display: none;">
+        <div class="card bg-primary text-white">
+            <div class="card-body d-flex justify-content-between align-items-center py-2">
+                <div>
+                    <strong>安装到手机</strong>
+                    <small class="d-block">获得更好的使用体验</small>
+                </div>
+                <div>
+                    <button class="btn btn-light btn-sm me-2" onclick="installPWA()">安装</button>
+                    <button class="btn btn-outline-light btn-sm" onclick="dismissInstallPrompt()">&times;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js?v=4.0"></script>
+
+    <!-- PWA Service Worker 注册 -->
+    <script>
+        // 注册 Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker 注册成功:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            });
+        }
+
+        // PWA 安装提示
+        let deferredPrompt;
+        const installPrompt = document.getElementById('pwa-install-prompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.style.display = 'block';
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('用户同意安装PWA');
+                    }
+                    deferredPrompt = null;
+                    installPrompt.style.display = 'none';
+                });
+            }
+        }
+
+        function dismissInstallPrompt() {
+            installPrompt.style.display = 'none';
+            localStorage.setItem('pwa-install-dismissed', 'true');
+        }
+
+        // 检查是否已经安装或已经关闭提示
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA 已安装');
+            installPrompt.style.display = 'none';
+        });
+
+        // 如果用户之前关闭了提示，不再显示
+        if (localStorage.getItem('pwa-install-dismissed') === 'true') {
+            installPrompt.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

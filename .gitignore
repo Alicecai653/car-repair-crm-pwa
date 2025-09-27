@@ -1,0 +1,9 @@
+# 忽略文件
+.DS_Store
+*.zip
+project.private.config.json
+README-PWA.md
+
+# 系统文件
+Thumbs.db
+Desktop.ini
