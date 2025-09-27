@@ -803,6 +803,38 @@
         </div>
     </div>
 
+    <!-- Android 手动安装提示 -->
+    <div id="android-manual-prompt" class="position-fixed bottom-0 start-0 end-0 p-3" style="z-index: 1050; display: none;">
+        <div class="card bg-success text-white">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>手动安装步骤</strong>
+                        <ol class="small mb-0 mt-1">
+                            <li>点击Chrome右上角的 ⋮ 菜单</li>
+                            <li>选择"安装应用"或"添加到主屏幕"</li>
+                            <li>确认安装</li>
+                        </ol>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm" onclick="dismissAndroidPrompt()">&times;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA 调试信息 -->
+    <div id="pwa-debug" class="position-fixed top-0 start-0 m-2" style="z-index: 1040; display: none; max-width: 300px;">
+        <div class="card bg-dark text-light">
+            <div class="card-header py-1">
+                <small>PWA调试信息</small>
+                <button class="btn btn-sm btn-outline-light float-end py-0" onclick="togglePWADebug()">×</button>
+            </div>
+            <div class="card-body py-2">
+                <div id="debug-content" class="small"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js?v=4.0"></script>
@@ -822,30 +854,90 @@
             });
         }
 
-        // PWA 安装提示 - 增强版本
+        // PWA 安装提示 - Android优化版本
         let deferredPrompt;
         const installPrompt = document.getElementById('pwa-install-prompt');
+        const androidPrompt = document.getElementById('android-manual-prompt');
+        let debugInfo = [];
 
-        // 检查PWA安装条件
+        // 添加调试信息
+        function addDebugInfo(info) {
+            debugInfo.push(`${new Date().toLocaleTimeString()}: ${info}`);
+            console.log('PWA Debug:', info);
+            updateDebugDisplay();
+        }
+
+        // 更新调试显示
+        function updateDebugDisplay() {
+            const debugContent = document.getElementById('debug-content');
+            if (debugContent) {
+                debugContent.innerHTML = debugInfo.slice(-10).join('<br>');
+            }
+        }
+
+        // 切换调试信息显示
+        function togglePWADebug() {
+            const debugPanel = document.getElementById('pwa-debug');
+            debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 显示调试信息面板
+        function showDebugPanel() {
+            document.getElementById('pwa-debug').style.display = 'block';
+            updateDebugDisplay();
+        }
+
+        // 检测设备和浏览器
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            const isAndroid = /Android/i.test(ua);
+            const isChrome = /Chrome/i.test(ua) && !/Edge/i.test(ua);
+            const isSamsung = /SamsungBrowser/i.test(ua);
+
+            return {
+                isAndroid,
+                isChrome,
+                isSamsung,
+                userAgent: ua,
+                hasServiceWorker: 'serviceWorker' in navigator,
+                hasBeforeInstallPrompt: 'BeforeInstallPromptEvent' in window,
+                isStandalone: window.matchMedia('(display-mode: standalone)').matches
+            };
+        }
+
+        // 检查PWA安装条件 - Android专用
         function checkPWAInstallability() {
+            const deviceInfo = getDeviceInfo();
+            addDebugInfo(`设备检测: Android=${deviceInfo.isAndroid}, Chrome=${deviceInfo.isChrome}`);
+
             // 检查是否已经在PWA模式中运行
-            if (window.matchMedia('(display-mode: standalone)').matches ||
-                window.navigator.standalone === true) {
-                console.log('已经在PWA模式中运行');
+            if (deviceInfo.isStandalone) {
+                addDebugInfo('已经在PWA模式中运行');
                 return false;
             }
 
             // 检查是否已关闭安装提示
             if (localStorage.getItem('pwa-install-dismissed') === 'true') {
+                addDebugInfo('用户已关闭安装提示');
                 return false;
             }
 
-            // 检查基本PWA条件
-            if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+            // Android Chrome 特殊处理
+            if (deviceInfo.isAndroid && deviceInfo.isChrome) {
+                addDebugInfo('Android Chrome环境，等待beforeinstallprompt事件');
+
+                // 如果5秒后还没有beforeinstallprompt事件，显示手动安装提示
+                setTimeout(() => {
+                    if (!deferredPrompt && !localStorage.getItem('android-manual-shown')) {
+                        addDebugInfo('未收到beforeinstallprompt事件，显示手动安装提示');
+                        showAndroidManualPrompt();
+                    }
+                }, 5000);
+
                 return true;
             }
 
-            // 对于不支持beforeinstallprompt的浏览器，显示手动安装提示
+            // iOS设备处理
             if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
                 setTimeout(() => {
                     if (!localStorage.getItem('ios-install-shown')) {
@@ -855,6 +947,19 @@
             }
 
             return false;
+        }
+
+        // 显示Android手动安装提示
+        function showAndroidManualPrompt() {
+            androidPrompt.style.display = 'block';
+            localStorage.setItem('android-manual-shown', 'true');
+            addDebugInfo('显示Android手动安装提示');
+        }
+
+        // 关闭Android手动提示
+        function dismissAndroidPrompt() {
+            androidPrompt.style.display = 'none';
+            localStorage.setItem('android-install-dismissed', 'true');
         }
 
         // iOS 手动安装提示
@@ -878,48 +983,78 @@
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('beforeinstallprompt 事件触发');
+            addDebugInfo('beforeinstallprompt 事件触发');
             e.preventDefault();
             deferredPrompt = e;
 
+            // 立即显示安装提示
             if (checkPWAInstallability()) {
                 installPrompt.style.display = 'block';
-                console.log('显示安装提示');
+                addDebugInfo('显示自动安装提示');
             }
         });
 
         function installPWA() {
             if (deferredPrompt) {
+                addDebugInfo('用户点击安装按钮');
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    console.log('用户选择:', choiceResult.outcome);
+                    addDebugInfo(`用户选择: ${choiceResult.outcome}`);
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('用户同意安装PWA');
+                        addDebugInfo('用户同意安装PWA');
                     }
                     deferredPrompt = null;
                     installPrompt.style.display = 'none';
                 });
+            } else {
+                addDebugInfo('没有可用的安装提示，显示手动安装指导');
+                showAndroidManualPrompt();
             }
         }
 
         function dismissInstallPrompt() {
             installPrompt.style.display = 'none';
             localStorage.setItem('pwa-install-dismissed', 'true');
+            addDebugInfo('用户关闭安装提示');
         }
 
         // 检查是否已经安装
         window.addEventListener('appinstalled', () => {
-            console.log('PWA 已安装');
+            addDebugInfo('PWA 已安装成功');
             installPrompt.style.display = 'none';
+            androidPrompt.style.display = 'none';
         });
 
         // 页面加载完成后检查安装条件
         window.addEventListener('load', () => {
+            addDebugInfo('页面加载完成，开始PWA检测');
+
+            // 开发环境显示调试面板
+            if (location.hostname === 'localhost' || location.hostname.includes('github.io')) {
+                setTimeout(() => showDebugPanel(), 1000);
+            }
+
             setTimeout(() => {
-                if (!deferredPrompt && checkPWAInstallability()) {
-                    console.log('检查PWA安装条件...');
-                }
-            }, 2000);
+                checkPWAInstallability();
+
+                // 如果既没有beforeinstallprompt也没有显示手动提示，强制显示
+                setTimeout(() => {
+                    const deviceInfo = getDeviceInfo();
+                    if (deviceInfo.isAndroid && deviceInfo.isChrome &&
+                        !deferredPrompt &&
+                        installPrompt.style.display === 'none' &&
+                        androidPrompt.style.display === 'none' &&
+                        !localStorage.getItem('android-install-dismissed')) {
+                        addDebugInfo('强制显示Android安装提示');
+                        showAndroidManualPrompt();
+                    }
+                }, 8000);
+            }, 1000);
+        });
+
+        // 双击标题显示调试信息
+        document.querySelector('h2').addEventListener('dblclick', () => {
+            showDebugPanel();
         });
     </script>
 </body>
