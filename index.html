@@ -10,6 +10,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="汽修CRM">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <!-- 确保PWA满足安装条件 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="汽修CRM">
+    <meta name="msapplication-TileColor" content="#0d6efd">
+    <meta name="msapplication-config" content="browserconfig.xml">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 图标 -->
@@ -816,20 +822,77 @@
             });
         }
 
-        // PWA 安装提示
+        // PWA 安装提示 - 增强版本
         let deferredPrompt;
         const installPrompt = document.getElementById('pwa-install-prompt');
 
+        // 检查PWA安装条件
+        function checkPWAInstallability() {
+            // 检查是否已经在PWA模式中运行
+            if (window.matchMedia('(display-mode: standalone)').matches ||
+                window.navigator.standalone === true) {
+                console.log('已经在PWA模式中运行');
+                return false;
+            }
+
+            // 检查是否已关闭安装提示
+            if (localStorage.getItem('pwa-install-dismissed') === 'true') {
+                return false;
+            }
+
+            // 检查基本PWA条件
+            if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+                return true;
+            }
+
+            // 对于不支持beforeinstallprompt的浏览器，显示手动安装提示
+            if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+                setTimeout(() => {
+                    if (!localStorage.getItem('ios-install-shown')) {
+                        showIOSInstallPrompt();
+                    }
+                }, 3000);
+            }
+
+            return false;
+        }
+
+        // iOS 手动安装提示
+        function showIOSInstallPrompt() {
+            const iosPrompt = document.createElement('div');
+            iosPrompt.innerHTML = `
+                <div class="position-fixed bottom-0 start-0 end-0 p-3" style="z-index: 1050;">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <strong>安装到主屏幕</strong>
+                                <small class="d-block">点击分享按钮 📤，然后选择"添加到主屏幕"</small>
+                            </div>
+                            <button class="btn btn-outline-light btn-sm" onclick="this.parentElement.parentElement.parentElement.parentElement.remove(); localStorage.setItem('ios-install-shown', 'true')">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(iosPrompt);
+            localStorage.setItem('ios-install-shown', 'true');
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt 事件触发');
             e.preventDefault();
             deferredPrompt = e;
-            installPrompt.style.display = 'block';
+
+            if (checkPWAInstallability()) {
+                installPrompt.style.display = 'block';
+                console.log('显示安装提示');
+            }
         });
 
         function installPWA() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log('用户选择:', choiceResult.outcome);
                     if (choiceResult.outcome === 'accepted') {
                         console.log('用户同意安装PWA');
                     }
@@ -844,16 +907,20 @@
             localStorage.setItem('pwa-install-dismissed', 'true');
         }
 
-        // 检查是否已经安装或已经关闭提示
+        // 检查是否已经安装
         window.addEventListener('appinstalled', () => {
             console.log('PWA 已安装');
             installPrompt.style.display = 'none';
         });
 
-        // 如果用户之前关闭了提示，不再显示
-        if (localStorage.getItem('pwa-install-dismissed') === 'true') {
-            installPrompt.style.display = 'none';
-        }
+        // 页面加载完成后检查安装条件
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (!deferredPrompt && checkPWAInstallability()) {
+                    console.log('检查PWA安装条件...');
+                }
+            }, 2000);
+        });
     </script>
 </body>
 </html>
